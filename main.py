@@ -164,7 +164,7 @@ def enviar_email_pdf(destinatario: str, codigo: str, pdf_bytes: bytes):
         server.send_message(mensaje)
         server.quit()
     except Exception as e:
-        print(f"Error envíando correo: {e}")
+        print(f"Error enviando correo: {e}")
 
 def guardar_deca_db(data: dict):
     conn = sqlite3.connect(DB_PATH)
@@ -276,7 +276,7 @@ def generar_pdf_deca(deca_data: dict, url_descarga: str) -> bytes:
     if modifs:
         seccion_titulo("5. HISTORIAL DE MODIFICACIONES EN CURSO (TRAZABILIDAD)")
         for m in modifs:
-            pdf.set_font("Helvetica", size=7)
+            pdf.set_font("Helvetica", style="7")
             pdf.multi_cell(0, 4, f" Modificado el {m.get('fecha_mod')} - Motivo: {m.get('motivo')}", border=1)
         pdf.ln(2)
 
