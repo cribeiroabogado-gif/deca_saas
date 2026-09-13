@@ -122,20 +122,28 @@ def generar_pdf_deca(deca_data: dict, url_descarga: str) -> bytes:
     pdf.set_auto_page_break(auto=True, margin=15)
     pdf.add_page()
     
-    # Header
+    # Encabezado principal
     pdf.set_font("Helvetica", style="B", size=13)
-    pdf.cell(0, 7, "DOCUMENTO DE CONTROL ADMINISTRATIVO EN EL TRANSPORTE (DeCA)", ln=True, align="C")
+    pdf.cell(0, 6, "DOCUMENTO DE CONTROL ADMINISTRATIVO EN EL TRANSPORTE (DeCA)", ln=True, align="C")
     pdf.set_font("Helvetica", size=8)
     pdf.cell(0, 4, "Orden FOM/2861/2012 y Ley 16/1987 de Ordenación de los Transportes Terrestres (LOTT)", ln=True, align="C")
-    pdf.ln(5)
+    pdf.ln(4)
 
-    # Bloque Código + QR
+    # Guardar posición Y inicial del bloque superior
+    y_inicial = pdf.get_y()
+
+    # Recuadro del Código (Izquierda)
     pdf.set_font("Helvetica", style="B", size=10)
-    pdf.cell(120, 8, f" CÓDIGO DE DOCUMENTO: {deca_data.get('codigo', 'DECA-001')}", border=1, ln=False)
-    
+    pdf.cell(145, 30, f" CÓDIGO DE DOCUMENTO: {deca_data.get('codigo', 'DECA-001')}", border=1)
+
+    # Recuadro y estampado del QR (Derecha)
+    pdf.set_xy(158, y_inicial)
+    pdf.cell(32, 30, "", border=1) # Marco exterior del QR
     if os.path.exists(qr_path):
-        pdf.image(qr_path, x=155, y=22, w=35)
-    pdf.ln(12)
+        pdf.image(qr_path, x=159, y=y_inicial + 1, w=28)
+
+    # Forzar el salto de posición Y por debajo de los bloques superiores (30mm + margen)
+    pdf.set_xy(10, y_inicial + 34)
 
     def seccion_titulo(texto):
         pdf.set_fill_color(230, 230, 230)
@@ -188,7 +196,6 @@ def generar_pdf_deca(deca_data: dict, url_descarga: str) -> bytes:
     pdf.cell(0, 4, "Documento de Control de Transporte emitido de conformidad con la normativa de transportes.", ln=True, align="C")
 
     return bytes(pdf.output())
-
 # ------------------------------------------------------------------------------
 # 4. RUTAS Y ENDPOINTS
 # ------------------------------------------------------------------------------
