@@ -419,33 +419,33 @@ def dashboard_usuario():
             }
 
             async function cargarHistorico() {
-                const res = await fetch('/api/v1/deca/listado');
-                const datos = await res.json();
-                const tbody = document.getElementById('tabla-historico');
-                tbody.innerHTML = '';
-                datos.forEach(d => {
-                    const fila = `
-                        <tr class="hover:bg-gray-50">
-                            <td class="p-2 font-medium">${d.fecha_servicio || '-'}</td>
-                            <td class="p-2 font-bold text-blue-600">${d.codigo}</td>
-                            <td class="p-2">
-                                <div class="font-semibold">${d.cargador}</div>
-                                <div class="text-gray-400">${d.transportista}</div>
-                            </td>
-                            <td class="p-2">
-                                <div>T: <span class="font-bold">${d.matricula_tractor}</span></div>
-                                <div class="text-gray-500">R: ${d.matricula_remolque || '-'}</div>
-                            </td>
-                            <td class="p-2">${d.ruta}</td>
-                            <td class="p-2 text-center space-x-1">
-                                <a href="/api/v1/deca/${d.codigo}/pdf" target="_blank" class="inline-block bg-gray-800 text-white px-2 py-1 rounded hover:bg-black">PDF</a>
-                                <button onclick='modificarOrden("${d.codigo}")' class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded hover:bg-yellow-200">Modificar</button>
-                            </td>
-                        </tr>
-                    `;
-                    tbody.innerHTML += fila;
-                });
-            }
+    const res = await fetch('/api/v1/deca/listado');
+    const datos = await res.json();
+    const tbody = document.getElementById('tabla-historico');
+    tbody.innerHTML = '';
+    datos.forEach(d => {
+        const fila = `
+            <tr class="hover:bg-gray-50">
+                <td class="p-2 font-medium">${d.fecha_servicio || '-'}</td>
+                <td class="p-2 font-bold text-blue-600">${d.codigo}</td>
+                <td class="p-2">
+                    <div class="font-semibold">${d.cargador}</div>
+                    <div class="text-gray-400">${d.transportista}</div>
+                </td>
+                <td class="p-2">
+                    <div>T: ${d.matricula_tractor}</div>
+                    <div class="text-gray-500">R: ${d.matricula_remolque || '-'}</div>
+                </td>
+                <td class="p-2">${d.ruta}</td>
+                <td class="p-2 text-center space-x-1">
+                    <a href="/api/v1/deca/${d.codigo}/pdf" target="_blank" class="inline-block bg-gray-800 text-white px-2 py-1 rounded hover:bg-black">PDF</a>
+                    <button onclick='modificarOrden("${d.codigo}")' class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded hover:bg-yellow-200">Modificar</button>
+                </td>
+            </tr>
+        `;
+        tbody.innerHTML += fila;
+    });
+}
 
             async function emitirDECA() {
                 const enviosBlocks = document.querySelectorAll('#lista-envios > div');
