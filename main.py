@@ -431,3 +431,11 @@ def dashboard_usuario():
     </body>
     </html>
     """
+# --- INTERFAZ WEB / DASHBOARD ---
+@app.get("/", response_class=HTMLResponse)
+@app.get("/dashboard", response_class=HTMLResponse)
+def dashboard_usuario():
+    return """
+    <!DOCTYPE html>
+    <html lang="es">
+    ...
