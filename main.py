@@ -219,13 +219,18 @@ def obtener_deca_db(codigo: str):
         "modificaciones": json.loads(row[14]) if row[14] else []
     }
 
+import io
+
 def generar_pdf_deca(deca_data: dict, url_descarga: str) -> bytes:
+    # Generar QR directamente en memoria
     qr = qrcode.QRCode(box_size=10, border=1)
     qr.add_data(url_descarga)
     qr.make(fit=True)
     img_qr = qr.make_image(fill_color="black", back_color="white")
-    qr_path = f"/tmp/qr_{deca_data.get('codigo', 'temp')}.png"
-    img_qr.save(qr_path)
+    
+    img_byte_arr = io.BytesIO()
+    img_qr.save(img_byte_arr, format='PNG')
+    img_byte_arr.seek(0)
 
     pdf = FPDF(orientation='P', unit='mm', format='A4')
     pdf.set_auto_page_break(auto=True, margin=15)
@@ -238,10 +243,12 @@ def generar_pdf_deca(deca_data: dict, url_descarga: str) -> bytes:
 
     pdf.set_font("Helvetica", style="B", size=9)
     pdf.cell(140, 28, f" CÓDIGO DOCUMENTO: {deca_data.get('codigo')}  |  FECHA SERVICIO: {deca_data.get('fecha_servicio')}", border=1, ln=False)
+    
     x_qr, y_qr = pdf.get_x(), pdf.get_y()
     pdf.cell(50, 28, "", border=1, ln=True)
-    if os.path.exists(qr_path):
-        pdf.image(qr_path, x=x_qr + 11, y=y_qr + 1, w=26, h=26)
+    
+    # Insertar QR pasando los bytes en memoria
+    pdf.image(img_byte_arr, x=x_qr + 11, y=y_qr + 1, w=26, h=26)
     pdf.ln(4)
 
     def seccion_titulo(texto):
@@ -287,7 +294,7 @@ def generar_pdf_deca(deca_data: dict, url_descarga: str) -> bytes:
     if modifs:
         seccion_titulo("5. HISTORIAL DE MODIFICACIONES EN CURSO (TRAZABILIDAD)")
         for m in modifs:
-            pdf.set_font("Helvetica", style="7")
+            pdf.set_font("Helvetica", size="7")
             pdf.multi_cell(0, 4, f" Modificado el {m.get('fecha_mod')} - Motivo: {m.get('motivo')}", border=1)
         pdf.ln(2)
 
@@ -329,11 +336,16 @@ def obtener_pdf(codigo: str):
     deca_data = obtener_deca_db(codigo)
     if not deca_data:
         raise HTTPException(status_code=404, detail="DeCA no encontrado")
+    
+    # URL pública completa
     url_descarga = f"https://deca-api.onrender.com/api/v1/deca/{codigo}/pdf"
     pdf_bytes = generar_pdf_deca(deca_data, url_descarga)
-    return Response(content=pdf_bytes, media_type="application/pdf", headers={
-        "Content-Disposition": f"inline; filename={codigo}.pdf"
-    })
+    
+    return Response(
+        content=pdf_bytes, 
+        media_type="application/pdf", 
+        headers={"Content-Disposition": f"inline; filename={codigo}.pdf"}
+    )
 
 @app.get("/", response_class=HTMLResponse)
 @app.get("/dashboard", response_class=HTMLResponse)
