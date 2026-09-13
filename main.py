@@ -127,23 +127,22 @@ def generar_pdf_deca(deca_data: dict, url_descarga: str) -> bytes:
     pdf.cell(0, 6, "DOCUMENTO DE CONTROL ADMINISTRATIVO EN EL TRANSPORTE (DeCA)", ln=True, align="C")
     pdf.set_font("Helvetica", size=8)
     pdf.cell(0, 4, "Orden FOM/2861/2012 y Ley 16/1987 de Ordenación de los Transportes Terrestres (LOTT)", ln=True, align="C")
-    pdf.ln(4)
+    pdf.ln(5)
 
-    # Guardar posición Y inicial del bloque superior
-    y_inicial = pdf.get_y()
-
-    # Recuadro del Código (Izquierda)
+    # BLOQUE SUPERIOR: CÓDIGO + QR EN TABLA FÍSICA
     pdf.set_font("Helvetica", style="B", size=10)
-    pdf.cell(145, 30, f" CÓDIGO DE DOCUMENTO: {deca_data.get('codigo', 'DECA-001')}", border=1)
-
-    # Recuadro y estampado del QR (Derecha)
-    pdf.set_xy(158, y_inicial)
-    pdf.cell(32, 30, "", border=1) # Marco exterior del QR
+    pdf.cell(140, 30, f" CÓDIGO DE DOCUMENTO: {deca_data.get('codigo', 'DECA-001')}", border=1, ln=False)
+    
+    # Celda contenedora del QR
+    x_qr = pdf.get_x()
+    y_qr = pdf.get_y()
+    pdf.cell(50, 30, "", border=1, ln=True) 
+    
+    # Estampar la imagen dentro de la celda reservada
     if os.path.exists(qr_path):
-        pdf.image(qr_path, x=159, y=y_inicial + 1, w=28)
-
-    # Forzar el salto de posición Y por debajo de los bloques superiores (30mm + margen)
-    pdf.set_xy(10, y_inicial + 34)
+        pdf.image(qr_path, x=x_qr + 10, y=y_qr + 1, w=28, h=28)
+    
+    pdf.ln(5)
 
     def seccion_titulo(texto):
         pdf.set_fill_color(230, 230, 230)
