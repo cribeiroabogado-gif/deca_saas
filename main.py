@@ -19,7 +19,7 @@ BASE_URL = os.getenv("BASE_URL", "http://localhost:8000")
 SECRET_KEY = os.getenv("SECRET_KEY", "LLAVE_SECRETA_POR_DEFECTO")
 ALGORITHM = os.getenv("ALGORITHM", "HS256")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "1440"))
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./deca_saas.db")
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:////tmp/deca_saas.db")
 
 engine = create_engine(
     DATABASE_URL, 
