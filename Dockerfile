@@ -15,6 +15,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
+# Crear usuario y asignar permisos completos sobre el directorio de trabajo
 RUN useradd -m appuser && chown -R appuser:appuser /app
 USER appuser
 
