@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Plataforma SaaS DeCA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen">
+    <div class="max-w-6xl mx-auto p-6">
+        <header class="flex justify-between items-center mb-8 bg-white p-6 rounded-xl shadow-sm border">
+            <div>
+                <h1 class="text-2xl font-bold">Plataforma DeCA</h1>
+                <p class="text-xs text-slate-500">Documento Electrónico de Control de Transportes</p>
+            </div>
+            <div id="userInfo" class="hidden text-right">
+                <span class="font-semibold block text-slate-700">BOUTIQUE LEGAL TRANSPORTE</span>
+                <button onclick="logout()" class="text-xs text-red-600 hover:underline">Cerrar Sesión</button>
+            </div>
+        </header>
+
+        <div id="authSection" class="max-w-md mx-auto bg-white p-8 rounded-xl shadow-sm border">
+            <h2 class="text-xl font-bold mb-6 text-center">Acceso a la Plataforma</h2>
+            <form onsubmit="ejecutarLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold mb-1">Email Corporativo</label>
+                    <input type="email" id="loginEmail" required class="w-full p-2.5 border rounded-lg text-sm" value="contacto@unamunolegal.es">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold mb-1">Contraseña</label>
+                    <input type="password" id="loginPass" required class="w-full p-2.5 border rounded-lg text-sm" value="mi_password_seguro_123">
+                </div>
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold p-2.5 rounded-lg text-sm">Iniciar Sesión</button>
+            </form>
+        </div>
+
+        <div id="dashboardSection" class="hidden space-y-8">
+            <div class="bg-white p-6 rounded-xl shadow-sm border">
+                <h2 class="text-lg font-bold mb-4">Emitir Nuevo Documento DeCA</h2>
+                <form onsubmit="emitirDeca(event)" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div><label class="block text-xs font-semibold mb-1">Cargador / Razón Social</label><input type="text" id="cargador_nombre" required class="w-full p-2 border rounded-lg text-sm" value="LOGISTICA CODECAR S.L."></div>
+                    <div><label class="block text-xs font-semibold mb-1">NIF Cargador</label><input type="text" id="cargador_nif" required class="w-full p-2 border rounded-lg text-sm" value="B4534535443"></div>
+                    <div><label class="block text-xs font-semibold mb-1">Domicilio Cargador</label><input type="text" id="cargador_domicilio" required class="w-full p-2 border rounded-lg text-sm" value="AVENIDA DEL CARAJO 12"></div>
+                    <div><label class="block text-xs font-semibold mb-1">Transportista / Razón Social</label><input type="text" id="transportista_nombre" required class="w-full p-2 border rounded-lg text-sm" value="HORIZONTE LOGISTICA S.L."></div>
+                    <div><label class="block text-xs font-semibold mb-1">NIF Transportista</label><input type="text" id="transportista_nif" required class="w-full p-2 border rounded-lg text-sm" value="B98765432"></div>
+                    <div><label class="block text-xs font-semibold mb-1">Domicilio Transportista</label><input type="text" id="transportista_domicilio" required class="w-full p-2 border rounded-lg text-sm" value="CALLE LOGROÑO 4"></div>
+                    <div><label class="block text-xs font-semibold mb-1">Origen de la Carga</label><input type="text" id="origen_lugar" required class="w-full p-2 border rounded-lg text-sm" value="MADRID"></div>
+                    <div><label class="block text-xs font-semibold mb-1">Destino de la Carga</label><input type="text" id="destino_lugar" required class="w-full p-2 border rounded-lg text-sm" value="BARCELONA"></div>
+                    <div><label class="block text-xs font-semibold mb-1">Descripción Mercancía</label><input type="text" id="mercancia_descripcion" required class="w-full p-2 border rounded-lg text-sm" value="CONGELADOS"></div>
+                    <div><label class="block text-xs font-semibold mb-1">Peso Total (kg)</label><input type="text" id="peso_kg" required class="w-full p-2 border rounded-lg text-sm" value="18500"></div>
+                    <div><label class="block text-xs font-semibold mb-1">Matrícula Vehículo</label><input type="text" id="matricula" required class="w-full p-2 border rounded-lg text-sm" value="1243BBS"></div>
+                    <div><label class="block text-xs font-semibold mb-1">Remolque (Opcional)</label><input type="text" id="remolque" class="w-full p-2 border rounded-lg text-sm" value="R98764"></div>
+                    <div class="md:col-span-3">
+                        <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold p-3 rounded-lg text-sm">Emitir Documento DeCA y Generar Hash</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-sm border">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-bold">Histórico de Documentos Emitidos</h2>
+                    <button onclick="cargarDecas()" class="text-xs bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded font-medium">🔄 Actualizar Lista</button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-slate-50 uppercase font-semibold border-b">
+                            <tr>
+                                <th class="p-3">Código DeCA</th>
+                                <th class="p-3">Fecha</th>
+                                <th class="p-3">Matrícula</th>
+                                <th class="p-3">Hash SHA-256</th>
+                                <th class="p-3 text-right">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="decaTableBody" class="divide-y"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var token = localStorage.getItem('token');
+
+        if (token) {
+            showDashboard();
+        }
+
+        async function ejecutarLogin(e) {
+            if (e) e.preventDefault();
+            var email = document.getElementById('loginEmail').value;
+            var pass = document.getElementById('loginPass').value;
+            var body = 'username=' + encodeURIComponent(email) + '&password=' + encodeURIComponent(pass);
+
+            try {
+                var res = await fetch('/api/v1/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: body
+                });
+
+                if (!res.ok) throw new Error('Acceso denegado');
+                var data = await res.json();
+                token = data.access_token;
+                localStorage.setItem('token', token);
+                showDashboard();
+            } catch (err) {
+                alert(err.message);
+            }
+        }
+
+        function showDashboard() {
+            document.getElementById('authSection').classList.add('hidden');
+            document.getElementById('dashboardSection').classList.remove('hidden');
+            document.getElementById('userInfo').classList.remove('hidden');
+            cargarDecas();
+        }
+
+        function logout() {
+            localStorage.clear();
+            location.reload();
+        }
+
+        async function cargarDecas() {
+            try {
+                var res = await fetch('/api/v1/deca', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+
+                if (res.status === 401) { logout(); return; }
+
+                var decas = await res.json();
+                var tbody = document.getElementById('decaTableBody');
+
+                if (!Array.isArray(decas) || decas.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-slate-400">No hay documentos cargados.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = decas.map(function(d) {
+                    var datos = d.datos_json || {};
+                    if (typeof datos === 'string') {
+                        try { datos = JSON.parse(datos); } catch(e) { datos = {}; }
+                    }
+                    var mat = datos.matricula || datos.vehiculo_matricula || '-';
+                    var hash = d.hash_sha256 ? d.hash_sha256.substring(0, 18) + '...' : '-';
+                    var fecha = d.created_at ? new Date(d.created_at).toLocaleString() : '-';
+                    
+                    return '<tr class="border-b hover:bg-slate-50">' +
+                        '<td class="p-3 font-bold text-blue-600">' + d.codigo_deca + '</td>' +
+                        '<td class="p-3">' + fecha + '</td>' +
+                        '<td class="p-3 font-semibold text-slate-800">' + mat + '</td>' +
+                        '<td class="p-3 font-mono text-[10px] text-slate-400">' + hash + '</td>' +
+                        '<td class="p-3 text-right space-x-2">' +
+                            '<a href="/api/v1/deca/' + d.codigo_deca + '/pdf" class="bg-emerald-50 text-emerald-700 hover:bg-emerald-100 px-3 py-1.5 rounded text-xs font-semibold">Descargar PDF</a>' +
+                            '<a href="/deca/index.php?id=' + d.codigo_deca + '" target="_blank" class="bg-blue-50 text-blue-700 hover:bg-blue-100 px-3 py-1.5 rounded text-xs font-semibold">Ver Inspector</a>' +
+                        '</td>' +
+                    '</tr>';
+                }).join('');
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        async function emitirDeca(e) {
+            e.preventDefault();
+            var payload = {
+                cargador_nombre: document.getElementById('cargador_nombre').value,
+                cargador_nif: document.getElementById('cargador_nif').value,
+                cargador_domicilio: document.getElementById('cargador_domicilio').value,
+                transportista_nombre: document.getElementById('transportista_nombre').value,
+                transportista_nif: document.getElementById('transportista_nif').value,
+                transportista_domicilio: document.getElementById('transportista_domicilio').value,
+                origen_lugar: document.getElementById('origen_lugar').value,
+                destino_lugar: document.getElementById('destino_lugar').value,
+                mercancia_descripcion: document.getElementById('mercancia_descripcion').value,
+                peso_kg: document.getElementById('peso_kg').value,
+                matricula: document.getElementById('matricula').value,
+                remolque: document.getElementById('remolque').value
+            };
+
+            var res = await fetch('/api/v1/deca', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (res.ok) {
+                alert('¡Documento emitido correctamente!');
+                cargarDecas();
+            } else {
+                alert('Error al emitir el documento');
+            }
+        }
+    </script>
+</body>
+</html>
