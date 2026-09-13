@@ -53,6 +53,16 @@ def init_db():
             rol TEXT DEFAULT 'transportista'
         )
     """)
+    
+    # Crear usuario administrador por defecto si no existe ninguno
+    cursor.execute("SELECT id FROM usuarios WHERE email = ?", ("admin@deca.com",))
+    if not cursor.fetchone():
+        hashed = hash_password("admin1234")
+        cursor.execute(
+            "INSERT INTO usuarios (email, password_hash, nombre, rol) VALUES (?, ?, ?, ?)",
+            ("admin@deca.com", hashed, "Administrador", "admin")
+        )
+    
     conn.commit()
     conn.close()
 
