@@ -54,7 +54,6 @@ def init_db():
         )
     """)
     
-    # Crear usuario administrador por defecto si no existe ninguno
     cursor.execute("SELECT id FROM usuarios WHERE email = ?", ("admin@deca.com",))
     if not cursor.fetchone():
         hashed = hash_password("admin1234")
@@ -66,7 +65,9 @@ def init_db():
     conn.commit()
     conn.close()
 
-init_db()
+@app.on_event("startup")
+def startup_event():
+    init_db()
 
 def hash_password(password: str) -> str:
     return pwd_context.hash(password)
