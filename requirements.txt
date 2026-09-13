@@ -1,10 +1,10 @@
 fastapi
-uvicorn[standard]
-python-jose[cryptography]
-passlib[bcrypt]
-python-multipart
-jinja2
-qrcode
+uvicorn
 fpdf2
+qrcode
+pillow
 pydantic
-sqlalchemy
+passlib[bcrypt]
+bcrypt
+pyjwt
+python-multipart
